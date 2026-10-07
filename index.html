@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090a0f">
+<link rel="manifest" href="manifest.json">
+<title>WOD — Smart Randomizer</title>
+<style>
+:root{--bg:#090a0f;--card:#12141b;--card2:#171a22;--line:#282c37;--text:#f5f6f8;--muted:#9097a6;--accent:#9b7cff;--good:#55df88;--warn:#ffb454;--bad:#ff6675}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% -10%,#241b46 0,#090a0f 38%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif}button,select{font:inherit;color:inherit}button{cursor:pointer}
+.app{max-width:760px;margin:auto;padding:18px 14px 90px}.top{display:flex;justify-content:space-between;align-items:center;margin:6px 0 18px}.logo{font-weight:950;letter-spacing:2px}.sub{font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:3px}.gear{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:9px 11px}
+.card,.hero{background:linear-gradient(180deg,#151821,#11131a);border:1px solid var(--line);border-radius:20px;padding:15px;margin-bottom:10px;box-shadow:0 12px 35px #0004}.hero{border-color:#39314e}.heroTop{display:flex;justify-content:space-between;gap:12px}.eyebrow,.sectionTitle{font-size:9px;font-weight:950;letter-spacing:1.5px;color:var(--muted)}h1{font-size:28px;margin:4px 0}h2{font-size:22px;margin:3px 0}.muted,.note{color:var(--muted);font-size:12px}.badge,.chip{display:inline-flex;border:1px solid #393247;background:#201a31;color:#c7baff;border-radius:99px;padding:6px 9px;font-size:9px;font-weight:900}.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.field label{display:block;color:var(--muted);font-size:9px;font-weight:900;letter-spacing:1px;margin:0 0 5px}.field select,.field input{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:11px;outline:none}.primary,.secondary{width:100%;border:0;border-radius:14px;padding:14px;font-weight:950;margin-top:9px}.primary{background:linear-gradient(135deg,#a58aff,#795be8);color:white}.secondary{background:var(--card2);border:1px solid var(--line)}.exercise{display:flex;align-items:center;gap:9px;padding:11px 0;border-bottom:1px solid #222631}.exercise:last-child{border-bottom:0}.num{width:27px;height:27px;border-radius:9px;background:#24202f;color:#cbbfff;display:grid;place-items:center;font-weight:950;font-size:11px}.grow{flex:1;min-width:0}.name{font-weight:900;font-size:14px}.meta{font-size:9px;color:var(--muted);margin-top:4px;text-transform:uppercase}.target{display:inline-block;margin-left:6px;padding:3px 5px;border-radius:5px;background:#1d3928;color:#73e59b;font-size:8px}.icon{border:1px solid var(--line);background:#171a21;border-radius:10px;width:34px;height:32px}.fav{color:#ffd45a;background:#292317}.extra{display:flex;align-items:center;gap:9px;padding:12px;background:#17131e;border:1px solid #322b40;border-radius:15px;margin:9px 0}.extra span{font-size:9px;color:var(--muted);font-weight:950}.extra strong{flex:1}.smallBtn{border:1px solid var(--line);background:#171a21;border-radius:9px;padding:7px 9px;font-size:9px;font-weight:950}.bar{height:8px;background:#262a33;border-radius:99px;overflow:hidden;margin-top:8px}.fill{height:100%;background:linear-gradient(90deg,var(--good),var(--warn),var(--bad))}.score{display:flex;justify-content:space-between;margin-top:10px;font-size:11px}.tabs{position:fixed;bottom:0;left:0;right:0;background:#0d0e13eF;border-top:1px solid var(--line);backdrop-filter:blur(18px);display:flex;justify-content:center;z-index:5}.tabs button{flex:1;max-width:190px;background:none;border:0;padding:13px 5px 15px;color:var(--muted);font-size:9px;font-weight:950}.tabs button.active{color:white}.view{display:none}.view.active{display:block}.statGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.stat{background:var(--card2);border:1px solid var(--line);border-radius:15px;padding:13px}.stat b{display:block;font-size:21px}.stat span{font-size:9px;color:var(--muted);font-weight:900}.hidden{display:none!important}
+@media(min-width:650px){.grid{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top"><div><div class="logo">WOD / RANDOMIZER</div><div class="sub">MUSCLE AWARE · SMART · CYCLIC</div></div><button class="gear" onclick="show('settings')">⚙️</button></header>
+
+<section id="workout" class="view active"></section>
+
+<section id="history" class="view"><div class="card"><div class="sectionTitle">HISTORY</div><div id="historyList"></div></div></section>
+<section id="stats" class="view"><div class="card"><div class="sectionTitle">PERSONAL STATS</div><div id="statsBox"></div></div></section>
+<section id="settings" class="view"><div class="card"><div class="sectionTitle">GENERATOR</div><div class="grid">
+<div class="field"><label>FORMAT</label><select id="format"><option value="rounds">FREE / ROUNDS</option><option value="emom">EMOM</option><option value="amrap">AMRAP</option></select></div>
+<div class="field"><label>INTENSITY / FATIGUE</label><select id="intensity"><option value="3">EASY · 3–4</option><option value="5">MEDIUM · 5–6</option><option value="7" selected>HARD · 7–8</option><option value="9">BEAST · 9–10</option></select></div>
+<div class="field"><label>EXERCISES</label><select id="count"><option>5</option><option selected>6</option><option>7</option><option>8</option><option>9</option></select></div>
+<div class="field"><label>LOCATION</label><select id="location"><option value="gym">GYM</option><option value="outdoor">OUTDOOR</option></select></div>
+</div><p class="note">Intensity is the target total Fatigue Score. The generator balances exercise load, muscle overlap, recent history, and the circular last→first transition.</p>
+<button class="primary" onclick="generate()">🎲 GENERATE WORKOUT</button></div>
+<div class="card"><div class="sectionTitle">BUY IN / CASH OUT</div><div class="grid"><div class="field"><label>BUY IN</label><select id="buy"><option value="on">ON</option><option value="off">OFF</option></select></div><div class="field"><label>CASH OUT</label><select id="cash"><option value="on">ON</option><option value="off">OFF</option></select></div></div></div></section>
+
+<nav class="tabs"><button class="active" onclick="show('workout')">🎲 WORKOUT</button><button onclick="show('history')">📜 HISTORY</button><button onclick="show('stats')">📊 STATS</button><button onclick="show('settings')">⚙️ SETUP</button></nav>
+</div>
+<script>
+const CATS={upper:"UPPER",lower:"LOWER",core:"CORE",hi:"CONDITIONING",static:"STATIC"};
+const PATTERNS={
+"Pull Up":["pull","bilateral"],"Chin Up":["pull","bilateral"],"Dips":["push","bilateral"],
+"Push Up":["push","bilateral"],"Close-Grip Push Up":["push","bilateral"],
+"Hand Release Push Up":["push","bilateral"],"Renegade Row":["pull","unilateral"],
+"Inverted Row":["pull","bilateral"],"Goblet Squat":["squat","bilateral"],
+"Bulgarian Split Squat":["lunge","unilateral"],"Deadlift":["hinge","bilateral"],
+"Thruster":["squat","bilateral"],"Step Up":["lunge","unilateral"],
+"Side Plank":["anti-lateral","unilateral"],"Plank":["anti-extension","bilateral"],
+"Dead Hang":["pull","bilateral"],"Wall Sit":["squat","bilateral"],"Sit Up":["flexion","bilateral"],
+"Leg Raise":["flexion","bilateral"],"Mountain Climber":["locomotion","unilateral"],
+"Plank KB Drag":["anti-rotation","unilateral"],"Hyperextension":["hinge","bilateral"],
+"Burpee":["locomotion","bilateral"],"Box Jump":["squat","bilateral"],"Jump Rope":["locomotion","bilateral"],
+"KB Swing":["hinge","bilateral"],"1-Handed KB Swing":["hinge","unilateral"],
+"Battle Rope":["push","bilateral"],"Run":["locomotion","bilateral"],"Sprint":["locomotion","bilateral"],
+"Row":["pull","bilateral"],"Air Bike":["locomotion","bilateral"],"Slam Ball":["rotation","bilateral"],
+"Wall Ball":["squat","bilateral"],"Russian Twist":["rotation","bilateral"],
+"Kneeling KB Chop":["rotation","unilateral"],"Banded Rotation":["rotation","bilateral"]
+};
+
+let S={
+ history:JSON.parse(localStorage.getItem("wod_history_v14")||"[]"),
+ favorites:JSON.parse(localStorage.getItem("wod_favorites_v14")||"[]"),
+ workout:null
+};
+const $=id=>document.getElementById(id);
+const rand=a=>a[Math.floor(Math.random()*a.length)];
+const all=()=>DATA.filter(e=>e[0]!=="Hip Extension").map(e=>({
+ name:e[0],cat:e[1],primary:e[2],secondary:e[3],fatigue:e[4],req:e[5],
+ pattern:PATTERNS[e[0]]?.[0]||"other",stance:PATTERNS[e[0]]?.[1]||"bilateral"
+}));
+
+function reqOK(e,loc){
+ if(loc!=="outdoor") return e.name!=="Run"&&e.name!=="Sprint";
+ return ["body","bar","dipbar","band","rope","outdoor"].includes(e.req);
+}
+function recentPenalty(e){
+ let p=0;
+ for(const w of S.history.slice(0,10)){
+   const days=(Date.now()-new Date(w.date))/86400000;
+   if(days>7) continue;
+   for(const x of w.exercises||[]){
+     if(x.name===e.name) p += days<1?45:days<2?30:days<4?15:days<7?5:0;
+     else if(x.primary===e.primary) p += Math.max(0,10-days*1.5);
+   }
+ }
+ return p;
+}
+function purposePenalty(a,b){
+ if(!a||!b)return 0;
+ if(a.cat==="hi"&&b.cat==="hi") return 1000; // hard constraint
+ if(a.cat===b.cat) return 22;
+ return 0;
+}
+function musclePenalty(a,b){
+ if(!a||!b)return 0;
+ let p=0;
+ if(a.primary===b.primary)p+=35;
+ if(a.primary===b.secondary||a.secondary===b.primary)p+=17;
+ if(a.secondary===b.secondary)p+=8;
+ return p;
+}
+function patternPenalty(a,b){
+ if(!a||!b)return 0;
+ let p=0;
+ if(a.pattern===b.pattern)p+=18;
+ if(a.stance===b.stance && a.cat===b.cat)p+=4;
+ return p;
+}
+function seamPenalty(a,b){return purposePenalty(a,b)+musclePenalty(a,b)+patternPenalty(a,b)}
+function targetFatigue(){return +$("intensity").value}
+
+function workoutFatigue(ex){
+ if(!ex.length)return 0;
+ return Math.min(10,Math.round(ex.reduce((s,e)=>s+e.fatigue,0)/ex.length*10)/10);
+}
+
+function validSequence(arr){
+ if(!arr.length)return false;
+ for(let i=0;i<arr.length;i++){
+   if(seamPenalty(arr[i],arr[(i+1)%arr.length])>=1000)return false;
+ }
+ return true;
+}
+
+function sequenceScore(arr){
+ let score=0, target=targetFatigue(), f=workoutFatigue(arr);
+ score+=Math.abs(f-target)*12;
+ for(let i=0;i<arr.length;i++){
+   let a=arr[i],b=arr[(i+1)%arr.length];
+   score+=purposePenalty(a,b)+musclePenalty(a,b)+patternPenalty(a,b);
+   score+=recentPenalty(a)*0.55;
+   if(S.favorites.includes(a.name))score-=5;
+ }
+ // Encourage core, but do not force it.
+ const core=arr.filter(e=>e.cat==="core").length;
+ if(core===0)score+=12;
+ if(core>=3)score+=5;
+ // Intensity distribution: penalize flat sessions.
+ const unique=new Set(arr.map(e=>e.fatigue)).size;
+ score-=Math.min(unique,4)*2;
+ return score;
+}
+
+function generateSequence(n,loc){
+ const pool=all().filter(e=>reqOK(e,loc));
+ let best=null,bestScore=Infinity;
+ // Generate many fully random candidates; constraints are evaluated globally.
+ for(let attempt=0;attempt<900;attempt++){
+   let arr=[], remaining=pool.slice();
+   for(let i=0;i<n && remaining.length;i++){
+     // Weighted random selection: avoid recent/duplicate purpose/muscle overlap,
+     // but retain controlled randomness rather than always picking the minimum.
+     const scored=remaining.map(e=>{
+       let c=recentPenalty(e)*.6;
+       if(arr.length){
+         c+=purposePenalty(arr.at(-1),e)+musclePenalty(arr.at(-1),e)+patternPenalty(arr.at(-1),e);
+       }
+       if(i===n-1 && arr.length){
+         c+=seamPenalty(e,arr[0])*1.15;
+       }
+       c+=Math.random()*24; // controlled randomness
+       return {e,c};
+     }).sort((a,b)=>a.c-b.c);
+     const pick=rand(scored.slice(0,Math.min(6,scored.length))).e;
+     arr.push(pick);
+     remaining=remaining.filter(x=>x.name!==pick.name);
+   }
+   if(arr.length===n && validSequence(arr)){
+     const s=sequenceScore(arr);
+     if(s<bestScore){best=arr;bestScore=s}
+   }
+ }
+ return best||pool.slice(0,n);
+}
+
+function makeExtra(kind,used,loc){
+ let p=all().filter(e=>reqOK(e,loc)&&!used.has(e.name));
+ if(kind==="buy")p=p.filter(e=>e.cat==="hi");
+ else p=p.filter(e=>["hi","core","static"].includes(e.cat));
+ return p.length?rand(p):null;
+}
+
+function generate(){
+ const loc=$("location").value,n=+$("count").value,format=$("format").value;
+ const exercises=generateSequence(n,loc),used=new Set(exercises.map(e=>e.name));
+ const buy=$("buy").value==="on"?makeExtra("buy",used,loc):null;if(buy)used.add(buy.name);
+ const cash=$("cash").value==="on"?makeExtra("cash",used,loc):null;
+ S.workout={date:new Date().toISOString(),location:loc,format,intensity:targetFatigue(),exercises,buy,cash};
+ render();
+}
+
+function smart(i){
+ const w=S.workout,old=w.exercises[i],pool=all().filter(e=>reqOK(e,w.location)&&e.name!==old.name&&!w.exercises.some((x,j)=>j!==i&&x.name===e.name));
+ let candidates=[];
+ for(const e of pool){
+   const a=w.exercises.slice();a[i]=e;
+   if(validSequence(a))candidates.push({e,s:sequenceScore(a)+Math.random()*14});
+ }
+ candidates.sort((a,b)=>a.s-b.s);
+ if(candidates[0]){w.exercises[i]=candidates[0].e;render()}
+}
+
+function extraReroll(kind){
+ const w=S.workout,used=new Set(w.exercises.map(e=>e.name));
+ if(w.buy)used.add(w.buy.name);if(w.cash)used.add(w.cash.name);
+ const x=makeExtra(kind,used,w.location);
+ if(x){w[kind]=x;render()}
+}
+function toggleFav(name){
+ S.favorites=S.favorites.includes(name)?S.favorites.filter(x=>x!==name):[...S.favorites,name];
+ localStorage.setItem("wod_favorites_v14",JSON.stringify(S.favorites));render();
+}
+function save(){
+ if(!S.workout)return;
+ S.history.unshift(JSON.parse(JSON.stringify(S.workout)));
+ S.history=S.history.slice(0,100);
+ localStorage.setItem("wod_history_v14",JSON.stringify(S.history));
+ renderHistory();renderStats();
+}
+function formatText(w){
+ if(w.format==="emom")return `${w.exercises.length} MIN EMOM`;
+ if(w.format==="amrap")return `${w.exercises.length} EXERCISE AMRAP`;
+ return `${w.exercises.length} EXERCISES · ROUNDS`;
+}
+function render(){
+ const w=S.workout;if(!w)return;
+ const f=workoutFatigue(w.exercises),t=targetFatigue();
+ let h=`<div class="hero"><div class="heroTop"><div><div class="eyebrow">${w.format==="emom"?"EVERY MINUTE ON THE MINUTE":w.format==="amrap"?"AS MANY ROUNDS AS POSSIBLE":"CIRCUIT / ROUNDS"}</div><h1>${formatText(w)}</h1><div class="muted">${w.location==="outdoor"?"OUTDOOR":"GYM"} · TARGET FATIGUE ${t}/10</div></div><span class="badge">${f.toFixed(1)}/10</span></div><div class="chips"><span class="chip">${w.exercises.filter(e=>e.cat==="core").length} CORE</span><span class="chip">${w.exercises.filter(e=>e.cat==="hi").length} CONDITIONING</span><span class="chip">${w.exercises.filter(e=>e.cat==="upper").length} UPPER</span><span class="chip">${w.exercises.filter(e=>e.cat==="lower").length} LOWER</span></div><div class="bar"><div class="fill" style="width:${f*10}%"></div></div><div class="score"><span>FATIGUE SCORE</span><b>${f.toFixed(1)} / 10</b></div></div>`;
+ if(w.buy)h+=`<div class="extra"><span>BUY IN</span><strong>${w.buy.name}</strong><button class="smallBtn" onclick="extraReroll('buy')">↻</button></div>`;
+ h+=`<div class="card"><div class="sectionTitle">WORKOUT · ${w.format.toUpperCase()}</div>`;
+ w.exercises.forEach((e,i)=>{
+   const fav=S.favorites.includes(e.name);
+   const last=S.history.find(x=>(x.exercises||[]).some(y=>y.name===e.name));
+   const lu=last?Math.floor((Date.now()-new Date(last.date))/86400000):null;
+   let target=w.format==="emom"?`${Math.max(1,Math.round(60/(e.fatigue+2)))} reps/min`:w.format==="amrap"?"repeat":"work";
+   h+=`<div class="exercise"><div class="num">${i+1}</div><div class="grow"><div class="name">${e.name}<span class="target">${target}</span></div><div class="meta">${CATS[e.cat]} · ${e.primary} + ${e.secondary} · ${e.pattern.toUpperCase()} · FATIGUE ${e.fatigue}/10${lu!==null?" · "+(lu===0?"LAST USED TODAY":lu+"D AGO"):""}</div></div><button class="icon ${fav?"fav":""}" onclick="toggleFav('${e.name.replaceAll("'","\\'")}')">★</button><button class="icon" onclick="smart(${i})">↻</button></div>`;
+ });
+ h+=`</div>`;
+ if(w.cash)h+=`<div class="extra"><span>CASH OUT</span><strong>${w.cash.name}</strong><button class="smallBtn" onclick="extraReroll('cash')">↻</button></div>`;
+ h+=`<button class="primary" onclick="save()">✓ SAVE WORKOUT</button><button class="secondary" onclick="generate()">🎲 SMART REROLL WHOLE WORKOUT</button>`;
+ $("workout").innerHTML=h;
+}
+function renderHistory(){
+ $("historyList").innerHTML=S.history.length?S.history.map(w=>`<div class="exercise"><div class="grow"><div class="name">${new Date(w.date).toLocaleDateString("hu-HU")} · ${w.format.toUpperCase()}</div><div class="meta">${w.exercises.map(e=>e.name).join(" · ")}</div></div></div>`).join(""):`<p class="note">Még nincs mentett edzés.</p>`;
+}
+function renderStats(){
+ const ex=S.history.flatMap(w=>w.exercises||[]),freq={};
+ ex.forEach(e=>freq[e.name]=(freq[e.name]||0)+1);
+ const most=Object.entries(freq).sort((a,b)=>b[1]-a[1])[0];
+ $("statsBox").innerHTML=`<div class="statGrid"><div class="stat"><b>${S.history.length}</b><span>WORKOUTS</span></div><div class="stat"><b>${ex.length}</b><span>EXERCISES</span></div><div class="stat"><b>${most?.[0]||"—"}</b><span>MOST USED</span></div></div>`;
+}
+function show(id){
+ document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));$(id).classList.add("active");
+ document.querySelectorAll(".tabs button").forEach((b,i)=>b.classList.toggle("active",["workout","history","stats","settings"][i]===id));
+ if(id==="history")renderHistory();if(id==="stats")renderStats();
+}
+generate();
+</script>
+</body></html>
